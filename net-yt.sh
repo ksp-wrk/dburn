@@ -20,8 +20,8 @@ trap cleanup EXIT
 
 # Helper: basic connectivity check (DNS + reachability)
 has_net() {
-  # try quick DNS + TCP reachability
-  (timeout 3 sh -c 'getent hosts youtube.com >/dev/null 2>&1') && return 0
+  curl -sS --max-time 3 -I https://www.google.com >/dev/null 2>&1 && return 0
+  curl -sS --max-time 3 -I https://www.youtube.com >/dev/null 2>&1 && return 0
   return 1
 }
 
