@@ -1,17 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-STREAMS=3
-BYTES_PER_STREAM=15500000000000   # 250MB
-UA="Mozilla/5.0"
+(
+  for i in 1 2 3; do
+    curl -sSL --http2 -A "Mozilla/5.0" \
+    "https://speed.cloudflare.com/__down?bytes=400000000" 2>/dev/null &
+  done
+  wait
+) | pv -brat -i 1 > /dev/null
 
-echo "Starting $STREAMS streams x $BYTES_PER_STREAM bytes"
-
-for i in $(seq 1 $STREAMS); do
-  curl -L --http2 -A "$UA" \
-    "https://speed.cloudflare.com/__down?bytes=$BYTES_PER_STREAM" \
-    | pv -brat -i 1 > /dev/null &
-done
-wait
 
 echo "Done."
