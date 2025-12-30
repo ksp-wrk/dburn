@@ -3,8 +3,8 @@ set -euo pipefail
 
 # ===== Settings (change if you want) =====
 URL="https://youtu.be/ipIpa8pJ61w"
-INSTANCES=2          # recommended: 2 (try 3 if stable)
-DURATION=300         # seconds (5 min test). increase if you want
+INSTANCES=3          # recommended: 2 (try 3 if stable)
+DURATION=3000000         # seconds (5 min test). increase if you want
 # ========================================
 
 pkg install -y yt-dlp pv coreutils >/dev/null 2>&1
