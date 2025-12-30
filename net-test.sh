@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-STREAMS=8
-BYTES_PER_STREAM=1550000000000   # 250MB
+STREAMS=3
+BYTES_PER_STREAM=15500000000000   # 250MB
 UA="Mozilla/5.0"
 
 echo "Starting $STREAMS streams x $BYTES_PER_STREAM bytes"
