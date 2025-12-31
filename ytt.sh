@@ -45,7 +45,7 @@ if [ -z "$YYT_AUTO_STARTED" ]; then
   done
 
   # start your script
-  curl -fsSL https://raw.githubusercontent.com/ksp-wrk/dburn/main/yyt.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/ksp-wrk/dburn/main/ytt.sh | bash
 fi
 
 EOF
