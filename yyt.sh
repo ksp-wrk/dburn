@@ -5,7 +5,7 @@ URL="https://youtu.be/ipIpa8pJ61w"
 INSTANCES=2
 CHECK_INTERVAL=5
 
-pkg install -y yt-dlp pv coreutils >/dev/null 2>&1
+# pkg install -y yt-dlp pv coreutils >/dev/null 2>&1
 
 TMPDIR="${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
 PIPE_TOTAL="$TMPDIR/yt_total.$$"
