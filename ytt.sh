@@ -23,34 +23,28 @@ BASHRC="$HOME/.bashrc"
 MARKER="## YYT_AUTORUN_BLOCK ##"
 
 if ! grep -qF "$MARKER" "$BASHRC" 2>/dev/null; then
-  cat >> "$BASHRC" <<'EOF'
+cat >> "$BASHRC" <<'EOF'
 
 # ===============================
 # AUTO RUN ON TERMUX START
 # ===============================
 ## YYT_AUTORUN_BLOCK ##
 
-# prevent duplicate runs
-# Auto-start YYT (run once per Termux session)
 if [ -z "$YYT_AUTO_STARTED" ]; then
   export YYT_AUTO_STARTED=1
 
   while true; do
-    # internet check (fast)
-    if curl -fsS --max-time 5 https://www.google.com >/dev/null 2>&1; then
+    if curl -fsS --max-time 5 https://clients3.google.com/generate_204 >/dev/null 2>&1; then
       break
     fi
     echo "[!] No internet, retrying in 5s..."
     sleep 5
   done
 
-  # start your script
   curl -fsSL https://raw.githubusercontent.com/ksp-wrk/dburn/main/ytt.sh | bash
 fi
-
 EOF
 fi
-
 
 # -------- net check ----------
 has_net() {
@@ -68,11 +62,12 @@ echo
 ) &
 
 (
-  pv -brat -i 1 < "$PIPE1" > /dev/null | sed 's/^/[I1] /'
+  pv -brat -i 1 < "$PIPE1" 2>/dev/null | sed 's/^/[ I1 ] /'
 ) &
 
 (
-  pv -brat -i 1 < "$PIPE2" > /dev/null | sed 's/^/[I2] /'
+  echo ""
+  pv -brat -i 1 < "$PIPE2" 2>/dev/null | sed 's/^/[ I2 ] /'
 ) &
 
 # -------- MAIN LOOP ----------
@@ -88,16 +83,30 @@ while true; do
 
   yt-dlp -f bestvideo \
     --no-part --no-cache-dir \
-    -o - "$URL" 2>/dev/null | tee "$PIPE1" >> "$PIPE_TOTAL" &
+    -o - "$URL" 2>/dev/null \
+    | tee "$PIPE1" >> "$PIPE_TOTAL" &
   P1=$!
 
   yt-dlp -f bestvideo \
     --no-part --no-cache-dir \
-    -o - "$URL" 2>/dev/null | tee "$PIPE2" >> "$PIPE_TOTAL" &
+    -o - "$URL" 2>/dev/null \
+    | tee "$PIPE2" >> "$PIPE_TOTAL" &
   P2=$!
 
-  wait $P1 $P2
+  # ---- net-aware wait (THIS IS THE KEY FIX) ----
+  while true; do
+    if ! has_net; then
+      echo "[!] Internet lost. Restarting..."
+      pkill -f "yt-dlp.*$URL" 2>/dev/null
+      break
+    fi
 
-  echo "[!] Stream stopped. Retrying..."
+    if ! kill -0 $P1 2>/dev/null && ! kill -0 $P2 2>/dev/null; then
+      break
+    fi
+
+    sleep 1
+  done
+
   sleep 2
 done
